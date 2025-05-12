@@ -43,6 +43,7 @@ class NotificationService {
     required String title,
     required String body,
     required tz.TZDateTime scheduledTime,
+    required int intervaloHoras,
   }) async {
     const androidDetails = AndroidNotificationDetails(
       'pill_guardian_channel',
@@ -73,5 +74,10 @@ class NotificationService {
 
   Future<void> cancelAllNotifications() async {
     await _notificationsPlugin.cancelAll();
+  }
+
+  tz.TZDateTime getNextScheduledTime(int horas) {
+    final now = tz.TZDateTime.now(tz.local);
+    return now.add(Duration(hours: horas));
   }
 }
