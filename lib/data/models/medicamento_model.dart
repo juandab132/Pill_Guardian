@@ -11,21 +11,19 @@ class MedicamentoModel {
     required this.duracion,
   });
 
+  Map<String, dynamic> toMap() => {
+    'nombre': nombre,
+    'dosis': dosis,
+    'frecuencia': frecuencia,
+    'duracion': duracion,
+  };
+
   factory MedicamentoModel.fromMap(Map<String, dynamic> map) {
     return MedicamentoModel(
-      nombre: map['nombre'] ?? 'No especificado',
-      dosis: map['dosis'] ?? 'No especificada',
-      frecuencia: map['frecuencia'] ?? 'No especificada',
-      duracion: map['duracion'] ?? 'No especificada',
+      nombre: map['nombre'] ?? '',
+      dosis: map['dosis'] ?? '',
+      frecuencia: map['frecuencia'] ?? '',
+      duracion: map['duracion'] ?? '',
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'nombre': nombre,
-      'dosis': dosis,
-      'frecuencia': frecuencia,
-      'duracion': duracion,
-    };
   }
 }

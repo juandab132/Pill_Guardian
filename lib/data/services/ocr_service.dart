@@ -1,5 +1,6 @@
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'dart:io';
+import '../models/medicamento_model.dart';
 
 class OCRService {
   static final OCRService _instance = OCRService._internal();
@@ -17,10 +18,10 @@ class OCRService {
     return recognizedText.text;
   }
 
-  List<Map<String, String>> processExtractedText(String text) {
+  List<MedicamentoModel> processExtractedText(String text) {
     final lines =
         text.split('\n').map((line) => line.trim().toUpperCase()).toList();
-    List<Map<String, String>> medicamentos = [];
+    List<MedicamentoModel> medicamentos = [];
 
     String? nombre;
     String? dosis;
@@ -55,12 +56,14 @@ class OCRService {
 
       if (nombre != null &&
           (dosis != null || frecuencia != null || duracion != null)) {
-        medicamentos.add({
-          'nombre': nombre,
-          'dosis': dosis ?? 'No especificada',
-          'frecuencia': frecuencia ?? 'No especificada',
-          'duracion': duracion ?? 'No especificada',
-        });
+        medicamentos.add(
+          MedicamentoModel(
+            nombre: nombre,
+            dosis: dosis ?? 'No especificada',
+            frecuencia: frecuencia ?? 'No especificada',
+            duracion: duracion ?? 'No especificada',
+          ),
+        );
 
         nombre = null;
         dosis = null;
@@ -68,6 +71,7 @@ class OCRService {
         duracion = null;
       }
     }
+
     return medicamentos;
   }
 
