@@ -1,0 +1,19 @@
+name: pills_guardian_v2_rebuild_complete
+description: A complete version of Pills Guardian with full functionality.
+publish_to: "none"
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get:
+  hive:
+  hive_flutter:
+  appwrite:
+  google_mlkit_text_recognition:
+  image_picker:
+
+flutter:
+  uses-material-design: true
