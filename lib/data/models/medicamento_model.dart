@@ -20,17 +20,12 @@ class MedicamentoModel {
     );
   }
 
-  Map<String, String> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'nombre': nombre,
       'dosis': dosis,
       'frecuencia': frecuencia,
       'duracion': duracion,
     };
-  }
-
-  @override
-  String toString() {
-    return '$nombre ($dosis, $frecuencia, $duracion)';
   }
 }
