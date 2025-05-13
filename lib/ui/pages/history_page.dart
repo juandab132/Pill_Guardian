@@ -8,7 +8,7 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HistoryController _controller = Get.put(HistoryController());
+    final HistoryController controller = Get.put(HistoryController());
 
     return Scaffold(
       appBar: AppBar(
@@ -16,23 +16,23 @@ class HistoryPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete_forever),
-            onPressed: _controller.clearHistory,
+            onPressed: controller.clearHistory,
           ),
         ],
       ),
       body: Obx(() {
-        if (_controller.isLoading.value) {
+        if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (_controller.history.isEmpty) {
+        if (controller.history.isEmpty) {
           return const Center(child: Text('No hay fórmulas almacenadas.'));
         }
 
         return ListView.builder(
-          itemCount: _controller.history.length,
+          itemCount: controller.history.length,
           itemBuilder: (context, index) {
-            final formula = _controller.history[index];
+            final formula = controller.history[index];
             return HistoryTile(
               formula: formula,
               onTap: () {
