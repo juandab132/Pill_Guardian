@@ -1,8 +1,8 @@
 class MedicamentoModel {
-  final String nombre;
-  final String dosis;
-  final String frecuencia;
-  final String duracion;
+  String nombre;
+  String dosis;
+  String frecuencia;
+  String duracion;
 
   MedicamentoModel({
     required this.nombre,
