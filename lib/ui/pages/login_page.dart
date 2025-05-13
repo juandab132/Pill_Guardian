@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pills_guardian_v2_rebuild_complete/controllers/auth_controller.dart';
 import 'package:pills_guardian_v2_rebuild_complete/routes.dart';
+import 'package:pills_guardian_v2_rebuild_complete/ui/widgets/custom_button.dart';
+import 'package:pills_guardian_v2_rebuild_complete/ui/widgets/custom_textfield.dart';
 
 class LoginPage extends StatelessWidget {
   final AuthController _authController = Get.find();
@@ -31,6 +33,7 @@ class LoginPage extends StatelessWidget {
               label: 'Correo electrónico',
               icon: Icons.email,
               keyboardType: TextInputType.emailAddress,
+              obscureText: false,
             ),
             const SizedBox(height: 16),
             CustomTextField(
@@ -59,6 +62,7 @@ class LoginPage extends StatelessWidget {
                             _authController.login(email, password);
                           }
                         },
+                        text: '',
                       ),
             ),
             const SizedBox(height: 16),

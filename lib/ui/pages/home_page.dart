@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pills_guardian_v2_rebuild_complete/controllers/home_controller.dart';
 import 'package:pills_guardian_v2_rebuild_complete/routes.dart';
+import 'package:pills_guardian_v2_rebuild_complete/ui/widgets/formula_preview_card.dart';
 
 class HomePage extends StatelessWidget {
   final HomeController _homeController = Get.put(HomeController());
@@ -43,12 +44,12 @@ class HomePage extends StatelessWidget {
           itemBuilder: (context, index) {
             final formula = _homeController.formulas[index];
             return FormulaPreviewCard(
-              formula: formula,
+              formula: formula.toMap(),
               onTap: () {
                 Get.toNamed(AppRoutes.formulaDetail, arguments: formula);
               },
               onDelete: () {
-                _homeController.deleteFormula(index);
+                _homeController.deleteFormula(index as String);
               },
             );
           },
