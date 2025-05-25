@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:fl_chart/fl_chart.dart';
 import 'package:pills_guardian_v2_rebuild_complete/data/services/hive_service.dart';
 import 'package:pills_guardian_v2_rebuild_complete/data/models/medicamento_model.dart';
 
@@ -31,28 +31,33 @@ class StatisticsPage extends StatelessWidget {
       }
     }
 
-    final List<charts.Series<MedicamentoStats, String>> series = [
-      charts.Series(
-        id: 'Frecuencia por medicamento',
-        data:
-            frecuenciaPorMedicamento.entries
-                .map(
-                  (e) => MedicamentoStats(nombre: e.key, totalHoras: e.value),
-                )
-                .toList(),
-        domainFn: (MedicamentoStats stats, _) => stats.nombre,
-        measureFn: (MedicamentoStats stats, _) => stats.totalHoras,
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-        labelAccessorFn: (MedicamentoStats stats, _) => '${stats.totalHoras} h',
-      ),
-    ];
+    final List<BarChartGroupData> barGroups = [];
+    final List<String> labels = [];
+    int index = 0;
+
+    frecuenciaPorMedicamento.forEach((nombre, horas) {
+      labels.add(nombre);
+      barGroups.add(
+        BarChartGroupData(
+          x: index++,
+          barRods: [
+            BarChartRodData(
+              toY: horas.toDouble(),
+              color: Colors.blueAccent,
+              width: 20,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ],
+        ),
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(title: const Text('Estadísticas de Medicación')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child:
-            series.first.data.isEmpty
+            barGroups.isEmpty
                 ? const Center(child: Text('No hay datos para mostrar.'))
                 : Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -66,19 +71,65 @@ class StatisticsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Expanded(
-                      child: charts.BarChart(
-                        series,
-                        animate: true,
-                        vertical: true,
-                        barRendererDecorator:
-                            charts.BarLabelDecorator<String>(),
-                        domainAxis: const charts.OrdinalAxisSpec(),
+                      child: BarChart(
+                        BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: _getMaxY(barGroups),
+                          barTouchData: BarTouchData(
+                            enabled: true,
+                            touchTooltipData: BarTouchTooltipData(
+                              tooltipBgColor: Colors.grey.shade200,
+                            ),
+                          ),
+                          titlesData: FlTitlesData(
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  final idx = value.toInt();
+                                  if (idx < 0 || idx >= labels.length) {
+                                    return const Text('');
+                                  }
+                                  return SideTitleWidget(
+                                    axisSide: meta.axisSide,
+                                    child: Text(
+                                      labels[idx],
+                                      style: const TextStyle(fontSize: 10),
+                                    ),
+                                  );
+                                },
+                                reservedSize: 42,
+                              ),
+                            ),
+                            leftTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: true),
+                            ),
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false),
+                            ),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          barGroups: barGroups,
+                        ),
                       ),
                     ),
                   ],
                 ),
       ),
     );
+  }
+
+  double _getMaxY(List<BarChartGroupData> barGroups) {
+    double maxY = 0;
+    for (var group in barGroups) {
+      for (var rod in group.barRods) {
+        if (rod.toY > maxY) maxY = rod.toY;
+      }
+    }
+    return maxY + 5; // un poco de margen arriba
   }
 
   int? _extraerHoras(String frecuencia) {
@@ -88,11 +139,4 @@ class StatisticsPage extends StatelessWidget {
     }
     return null;
   }
-}
-
-class MedicamentoStats {
-  final String nombre;
-  final int totalHoras;
-
-  MedicamentoStats({required this.nombre, required this.totalHoras});
 }
