@@ -3,28 +3,53 @@ import 'package:pills_guardian_v2_rebuild_complete/data/models/medicamento_model
 
 class MedicationCard extends StatelessWidget {
   final MedicamentoModel medicamento;
+  final VoidCallback? onDelete;
 
-  const MedicationCard({super.key, required this.medicamento});
+  const MedicationCard({super.key, required this.medicamento, this.onDelete});
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  medicamento.nombre,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (onDelete != null)
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: onDelete,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
             Text(
-              medicamento.nombre,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              'Dosis: ${medicamento.dosis}',
+              style: const TextStyle(fontSize: 14),
             ),
             const SizedBox(height: 4),
-            Text('Dosis: ${medicamento.dosis}'),
-            Text('Frecuencia: ${medicamento.frecuencia}'),
-            Text('Duración: ${medicamento.duracion}'),
+            Text(
+              'Frecuencia: ${medicamento.frecuencia}',
+              style: const TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Duración: ${medicamento.duracion}',
+              style: const TextStyle(fontSize: 14),
+            ),
           ],
         ),
       ),

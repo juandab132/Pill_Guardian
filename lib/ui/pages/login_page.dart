@@ -62,7 +62,6 @@ class LoginPage extends StatelessWidget {
                             _authController.login(email, password);
                           }
                         },
-                        text: '',
                       ),
             ),
             const SizedBox(height: 16),

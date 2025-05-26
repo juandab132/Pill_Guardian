@@ -20,7 +20,12 @@ class OCRService {
 
   List<MedicamentoModel> processExtractedText(String text) {
     final lines =
-        text.split('\n').map((line) => line.trim().toUpperCase()).toList();
+        text
+            .split('\n')
+            .map((line) => line.trim().toUpperCase())
+            .where((line) => line.isNotEmpty)
+            .toList();
+
     List<MedicamentoModel> medicamentos = [];
 
     String? nombre;
@@ -29,17 +34,25 @@ class OCRService {
     String? duracion;
 
     for (var line in lines) {
-      if (line.isEmpty) continue;
-
-      final regexMed = RegExp(
-        r'^([A-ZÑÁÉÍÓÚ0-9\s]+)\s+(\d+MG|\d+ ML|\d+ MCG)?',
-      );
-      final match = regexMed.firstMatch(line);
-      if (match != null) {
-        nombre = match.group(1)?.trim();
-        dosis = match.group(2)?.trim();
+      if (line.startsWith('CÓDIGO') ||
+          line.startsWith('DOSIS') ||
+          line.startsWith('VIA') ||
+          line.contains('OBSERVACION')) {
+        continue;
       }
 
+      // Detectar duración
+      final matchDuracionDias = RegExp(
+        r'POR\s+(\d{1,3})\s*D[ÍI]AS?',
+      ).firstMatch(line);
+      final matchDuracionMeses = RegExp(r'(\d{1,2})\s*MESES?').firstMatch(line);
+      if (matchDuracionDias != null) {
+        duracion = '${matchDuracionDias.group(1)} días';
+      } else if (matchDuracionMeses != null) {
+        duracion = '${matchDuracionMeses.group(1)} meses';
+      }
+
+      // Detectar frecuencia
       final matchFrecuencia = RegExp(
         r'CADA\s+(\d{1,2})\s*HORAS?',
       ).firstMatch(line);
@@ -47,13 +60,24 @@ class OCRService {
         frecuencia = 'Cada ${matchFrecuencia.group(1)} horas';
       }
 
-      final matchDuracion = RegExp(
-        r'POR\s+(\d{1,3})\s*D[IÍ]AS?',
+      // Detectar medicamento y dosis
+      final matchMedicamento = RegExp(
+        r'^([A-ZÑÁÉÍÓÚ0-9\s]{3,})\s+(\d+\s?(MG|ML|MCG|AMP|TAB|G))',
       ).firstMatch(line);
-      if (matchDuracion != null) {
-        duracion = '${matchDuracion.group(1)} días';
+      if (matchMedicamento != null) {
+        nombre = matchMedicamento.group(1)?.trim();
+        dosis = matchMedicamento.group(2)?.trim();
       }
 
+      // Si solo hay dosis en otra línea (como "1 TAB") la tomamos como dosis también
+      final matchSoloDosis = RegExp(
+        r'^(\d+\s?(TAB|AMP|MG|ML))$',
+      ).firstMatch(line);
+      if (matchSoloDosis != null && dosis == null) {
+        dosis = matchSoloDosis.group(1);
+      }
+
+      // Si detectamos nombre o dosis y al menos uno de los otros campos, lo agregamos
       if (nombre != null &&
           (dosis != null || frecuencia != null || duracion != null)) {
         medicamentos.add(
@@ -65,6 +89,7 @@ class OCRService {
           ),
         );
 
+        // Reiniciar
         nombre = null;
         dosis = null;
         frecuencia = null;

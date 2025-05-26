@@ -83,7 +83,6 @@ class RegisterPage extends StatelessWidget {
 
                           _authController.register(email, password);
                         },
-                        text: '',
                       ),
             ),
             const SizedBox(height: 16),

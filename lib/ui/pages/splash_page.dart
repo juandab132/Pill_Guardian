@@ -38,10 +38,10 @@ class _SplashPageState extends State<SplashPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/images/pills_logo.png',
-              width: 120,
-              height: 120,
+            Icon(
+              Icons.medication,
+              size: 80,
+              color: Theme.of(context).primaryColor,
             ),
             const SizedBox(height: 24),
             const CircularProgressIndicator(),
