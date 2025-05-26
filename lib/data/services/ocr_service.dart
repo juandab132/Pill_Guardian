@@ -41,7 +41,6 @@ class OCRService {
         continue;
       }
 
-      // Detectar duración
       final matchDuracionDias = RegExp(
         r'POR\s+(\d{1,3})\s*D[ÍI]AS?',
       ).firstMatch(line);
@@ -52,7 +51,6 @@ class OCRService {
         duracion = '${matchDuracionMeses.group(1)} meses';
       }
 
-      // Detectar frecuencia
       final matchFrecuencia = RegExp(
         r'CADA\s+(\d{1,2})\s*HORAS?',
       ).firstMatch(line);
@@ -60,7 +58,6 @@ class OCRService {
         frecuencia = 'Cada ${matchFrecuencia.group(1)} horas';
       }
 
-      // Detectar medicamento y dosis
       final matchMedicamento = RegExp(
         r'^([A-ZÑÁÉÍÓÚ0-9\s]{3,})\s+(\d+\s?(MG|ML|MCG|AMP|TAB|G))',
       ).firstMatch(line);
@@ -69,7 +66,6 @@ class OCRService {
         dosis = matchMedicamento.group(2)?.trim();
       }
 
-      // Si solo hay dosis en otra línea (como "1 TAB") la tomamos como dosis también
       final matchSoloDosis = RegExp(
         r'^(\d+\s?(TAB|AMP|MG|ML))$',
       ).firstMatch(line);
@@ -77,7 +73,6 @@ class OCRService {
         dosis = matchSoloDosis.group(1);
       }
 
-      // Si detectamos nombre o dosis y al menos uno de los otros campos, lo agregamos
       if (nombre != null &&
           (dosis != null || frecuencia != null || duracion != null)) {
         medicamentos.add(
@@ -89,7 +84,6 @@ class OCRService {
           ),
         );
 
-        // Reiniciar
         nombre = null;
         dosis = null;
         frecuencia = null;

@@ -29,24 +29,18 @@ class HomePage extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final validFormulas =
-            _homeController.formulas.where((formula) {
-              final nombre = (formula['nombreFormula'] ?? '').toString().trim();
-              final medicamentos = List<Map<String, dynamic>>.from(
-                formula['medicamentos'] ?? [],
-              );
-              return nombre.isNotEmpty && medicamentos.isNotEmpty;
-            }).toList();
+        final formulas = _homeController.groupedFormulas;
 
-        if (validFormulas.isEmpty) {
+        if (formulas.isEmpty) {
           return const Center(child: Text('No tienes fórmulas registradas.'));
         }
 
         return ListView.builder(
-          itemCount: validFormulas.length,
+          itemCount: formulas.length,
           padding: const EdgeInsets.all(12),
           itemBuilder: (context, index) {
-            final formula = validFormulas[index];
+            final formula = formulas[index];
+
             return Card(
               child: ListTile(
                 title: Text(formula['nombreFormula'] ?? 'Sin nombre'),
@@ -54,7 +48,9 @@ class HomePage extends StatelessWidget {
                 trailing: IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
-                    _homeController.deleteFormula(formula['id']);
+                    _homeController.deleteFormula(
+                      List<String>.from(formula['ids']),
+                    );
                   },
                 ),
                 onTap: () {

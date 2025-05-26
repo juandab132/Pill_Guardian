@@ -66,6 +66,7 @@ class AppwriteService {
           'dosis': med.dosis,
           'frecuencia': med.frecuencia,
           'duracion': med.duracion,
+          'tomado': false,
           'fechaCreacion': DateTime.now().toUtc().toIso8601String(),
         },
       );
@@ -89,7 +90,22 @@ class AppwriteService {
     );
   }
 
-  updateFormula(String formulaId, Map<String, dynamic> document) {}
+  Future<void> updateDocumentField({
+    required String documentId,
+    required String field,
+    required dynamic value,
+  }) async {
+    await _databases.updateDocument(
+      databaseId: databaseId,
+      collectionId: collectionId,
+      documentId: documentId,
+      data: {field: value},
+    );
+  }
 
-  markMedicamentoAsTaken(String docId) {}
+  Future<void> markMedicamentoAsTaken(String docId) async {
+    await updateDocumentField(documentId: docId, field: 'tomado', value: true);
+  }
+
+  updateFormula(String formulaId, Map<String, dynamic> document) {}
 }

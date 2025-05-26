@@ -58,7 +58,11 @@ class RemindersController extends GetxController {
 
   Future<void> markAsTaken(String docId) async {
     try {
-      await _appwriteService.markMedicamentoAsTaken(docId);
+      await _appwriteService.updateDocumentField(
+        documentId: docId,
+        field: 'tomado',
+        value: true,
+      );
       await loadReminders();
     } catch (e) {
       Get.snackbar('Error', 'No se pudo marcar como tomado');
