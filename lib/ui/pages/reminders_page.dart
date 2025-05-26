@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import 'package:pills_guardian_v2_rebuild_complete/controllers/reminders_controller.dart';
 
 class RemindersPage extends StatelessWidget {
-  final RemindersController _remindersController = Get.put(
-    RemindersController(),
-  );
+  final RemindersController _controller = Get.put(RemindersController());
 
   RemindersPage({super.key});
 
@@ -17,23 +15,23 @@ class RemindersPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => _remindersController.loadReminders(),
+            onPressed: () => _controller.loadReminders(),
           ),
         ],
       ),
       body: Obx(() {
-        if (_remindersController.isLoading.value) {
+        if (_controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (_remindersController.reminders.isEmpty) {
+        if (_controller.groupedFormulas.isEmpty) {
           return const Center(child: Text('No hay recordatorios disponibles.'));
         }
 
         return ListView.builder(
-          itemCount: _remindersController.reminders.length,
+          itemCount: _controller.groupedFormulas.length,
           itemBuilder: (context, index) {
-            final formula = _remindersController.reminders[index];
+            final formula = _controller.groupedFormulas[index];
             final medicamentos = List<Map<String, dynamic>>.from(
               formula['medicamentos'] ?? [],
             );
@@ -41,30 +39,30 @@ class RemindersPage extends StatelessWidget {
             return ExpansionTile(
               title: Text(formula['nombreFormula'] ?? 'Sin nombre'),
               subtitle: Text('Fecha: ${formula['fechaCreacion'] ?? ''}'),
-              children: List.generate(medicamentos.length, (i) {
-                final med = medicamentos[i];
-                final tomado = med['tomado'] == true;
+              children:
+                  medicamentos.map((med) {
+                    final tomado = med['tomado'] == true;
 
-                return ListTile(
-                  title: Text(med['nombre'] ?? 'Sin nombre'),
-                  subtitle: Text(
-                    'Dosis: ${med['dosis']} | Frecuencia: ${med['frecuencia']} | Duración: ${med['duracion']}',
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(
-                      tomado
-                          ? Icons.check_circle
-                          : Icons.radio_button_unchecked,
-                      color: tomado ? Colors.green : Colors.grey,
-                    ),
-                    onPressed: () {
-                      if (!tomado) {
-                        _remindersController.markAsTaken(formula['id'], i);
-                      }
-                    },
-                  ),
-                );
-              }),
+                    return ListTile(
+                      title: Text(med['nombre'] ?? 'Sin nombre'),
+                      subtitle: Text(
+                        'Dosis: ${med['dosis']} | Frecuencia: ${med['frecuencia']} | Duración: ${med['duracion']}',
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(
+                          tomado
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: tomado ? Colors.green : Colors.grey,
+                        ),
+                        onPressed: () {
+                          if (!tomado) {
+                            _controller.markAsTaken(med['docId']);
+                          }
+                        },
+                      ),
+                    );
+                  }).toList(),
             );
           },
         );

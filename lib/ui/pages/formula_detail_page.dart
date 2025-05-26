@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:pills_guardian_v2_rebuild_complete/data/models/medicamento_model.dart';
 
 class FormulaDetailPage extends StatelessWidget {
-  final Map<String, dynamic> formula = Get.arguments;
+  final Map<String, dynamic> formula = Map<String, dynamic>.from(Get.arguments);
 
   FormulaDetailPage({super.key});
 
@@ -11,7 +11,7 @@ class FormulaDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<MedicamentoModel> medicamentos =
         (formula['medicamentos'] as List)
-            .map((e) => MedicamentoModel.fromMap(e))
+            .map((e) => MedicamentoModel.fromMap(Map<String, dynamic>.from(e)))
             .toList();
 
     return Scaffold(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pills_guardian_v2_rebuild_complete/controllers/home_controller.dart';
 import 'package:pills_guardian_v2_rebuild_complete/routes.dart';
-import 'package:pills_guardian_v2_rebuild_complete/ui/widgets/formula_preview_card.dart';
 
 class HomePage extends StatelessWidget {
   final HomeController _homeController = Get.put(HomeController());
@@ -17,15 +16,11 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications),
-            onPressed: () {
-              Get.toNamed(AppRoutes.alerts);
-            },
+            onPressed: () => Get.toNamed(AppRoutes.alerts),
           ),
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: () {
-              Get.toNamed(AppRoutes.profile);
-            },
+            onPressed: () => Get.toNamed(AppRoutes.profile),
           ),
         ],
       ),
@@ -34,31 +29,44 @@ class HomePage extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (_homeController.formulas.isEmpty) {
+        final validFormulas =
+            _homeController.formulas.where((formula) {
+              final nombre = (formula['nombreFormula'] ?? '').toString().trim();
+              final medicamentos = List<Map<String, dynamic>>.from(
+                formula['medicamentos'] ?? [],
+              );
+              return nombre.isNotEmpty && medicamentos.isNotEmpty;
+            }).toList();
+
+        if (validFormulas.isEmpty) {
           return const Center(child: Text('No tienes fórmulas registradas.'));
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.all(16.0),
-          itemCount: _homeController.formulas.length,
+          itemCount: validFormulas.length,
+          padding: const EdgeInsets.all(12),
           itemBuilder: (context, index) {
-            final formula = _homeController.formulas[index];
-            return FormulaPreviewCard(
-              formula: formula.toMap(),
-              onTap: () {
-                Get.toNamed(AppRoutes.formulaDetail, arguments: formula);
-              },
-              onDelete: () {
-                _homeController.deleteFormula(index as String);
-              },
+            final formula = validFormulas[index];
+            return Card(
+              child: ListTile(
+                title: Text(formula['nombreFormula'] ?? 'Sin nombre'),
+                subtitle: Text('Fecha: ${formula['fechaCreacion'] ?? ''}'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () {
+                    _homeController.deleteFormula(formula['id']);
+                  },
+                ),
+                onTap: () {
+                  Get.toNamed(AppRoutes.formulaDetail, arguments: formula);
+                },
+              ),
             );
           },
         );
       }),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Get.toNamed(AppRoutes.createFormula);
-        },
+        onPressed: () => Get.toNamed(AppRoutes.createFormula),
         icon: const Icon(Icons.add),
         label: const Text('Nueva Fórmula'),
       ),

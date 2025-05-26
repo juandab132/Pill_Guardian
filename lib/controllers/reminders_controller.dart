@@ -1,10 +1,10 @@
 import 'package:get/get.dart';
-import 'package:pills_guardian_v2_rebuild_complete/data/services/hive_service.dart';
+import 'package:pills_guardian_v2_rebuild_complete/data/services/appwrite_service.dart';
 
 class RemindersController extends GetxController {
-  final HiveService _hiveService = HiveService();
+  final AppwriteService _appwriteService = AppwriteService();
 
-  var reminders = <Map<String, dynamic>>[].obs;
+  var groupedFormulas = <Map<String, dynamic>>[].obs;
   var isLoading = false.obs;
 
   @override
@@ -16,31 +16,52 @@ class RemindersController extends GetxController {
   Future<void> loadReminders() async {
     try {
       isLoading.value = true;
-      final formulas = _hiveService.getAllFormulasLocally();
-      reminders.assignAll(formulas);
+      final user = await _appwriteService.getCurrentUser();
+      final documents = await _appwriteService.getFormulas(user.$id);
+
+      final Map<String, Map<String, dynamic>> grouped = {};
+
+      for (final doc in documents) {
+        final data = doc.data;
+        final nombre = (data['nombreFormula'] ?? 'Sin nombre').toString();
+        final id = data['userId'];
+        final fecha = data['fechaCreacion'];
+
+        final medicamento = {
+          'nombre': data['nombre'],
+          'dosis': data['dosis'],
+          'frecuencia': data['frecuencia'],
+          'duracion': data['duracion'],
+          'tomado': data['tomado'] ?? false,
+          'docId': doc.$id,
+        };
+
+        if (!grouped.containsKey(nombre)) {
+          grouped[nombre] = {
+            'nombreFormula': nombre,
+            'fechaCreacion': fecha,
+            'userId': id,
+            'medicamentos': [medicamento],
+          };
+        } else {
+          grouped[nombre]!['medicamentos'].add(medicamento);
+        }
+      }
+
+      groupedFormulas.assignAll(grouped.values.toList());
     } catch (e) {
-      Get.snackbar('Error', 'No se pudieron cargar los recordatorios.');
+      Get.snackbar('Error', 'No se pudieron cargar los recordatorios');
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> markAsTaken(String formulaId, int medicamentoIndex) async {
-    final formula = _hiveService.getFormulaById(formulaId);
-    if (formula == null) return;
-
-    final medicamentos = List<Map<String, dynamic>>.from(
-      formula['medicamentos'] ?? [],
-    );
-    if (medicamentoIndex >= 0 && medicamentoIndex < medicamentos.length) {
-      medicamentos[medicamentoIndex]['tomado'] = true;
-      formula['medicamentos'] = medicamentos;
-
-      await _hiveService.saveFormulaLocally(
-        formulaId: formulaId,
-        formulaData: formula,
-      );
+  Future<void> markAsTaken(String docId) async {
+    try {
+      await _appwriteService.markMedicamentoAsTaken(docId);
       await loadReminders();
+    } catch (e) {
+      Get.snackbar('Error', 'No se pudo marcar como tomado');
     }
   }
 }

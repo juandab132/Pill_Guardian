@@ -14,10 +14,14 @@ class StatisticsPage extends StatelessWidget {
     final List<MedicamentoModel> allMedicamentos = [];
 
     for (var formula in formulas) {
+      final medsRaw = formula['medicamentos'] ?? [];
+
       final meds =
-          (formula['medicamentos'] as List)
-              .map((e) => MedicamentoModel.fromMap(e))
-              .toList();
+          medsRaw.map<MedicamentoModel>((e) {
+            final map = Map<String, dynamic>.from(e as Map);
+            return MedicamentoModel.fromMap(map);
+          }).toList();
+
       allMedicamentos.addAll(meds);
     }
 
@@ -129,7 +133,7 @@ class StatisticsPage extends StatelessWidget {
         if (rod.toY > maxY) maxY = rod.toY;
       }
     }
-    return maxY + 5; // un poco de margen arriba
+    return maxY + 5;
   }
 
   int? _extraerHoras(String frecuencia) {

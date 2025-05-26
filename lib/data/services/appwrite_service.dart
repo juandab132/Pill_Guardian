@@ -88,4 +88,8 @@ class AppwriteService {
       documentId: documentId,
     );
   }
+
+  updateFormula(String formulaId, Map<String, dynamic> document) {}
+
+  markMedicamentoAsTaken(String docId) {}
 }
