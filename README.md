@@ -1,16 +1,25 @@
-# pills_guardian_v2_rebuild_complete
+Credenciales
 
-A new Flutter project.
+Endpoint: https://cloud.appwrite.io/v1
+projectId = '680eb01b000bd489842c';
+databaseId = '680ed41a0006ddbb2030';
+collectionId = '680ed424001466590af1';
 
-## Getting Started
+Usuario de prueba
 
-This project is a starting point for a Flutter application.
+Puedes ingresar con el siguiente usuario:
 
-A few resources to get you started if this is your first Flutter project:
+📧 Correo: pillsguardian@test.com
+🔑 Contraseña: 12345678
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+O puedes registrarte directamente desde la app
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+El proyecto se ejecuto usando el Pixel 9 API 35 con android 15.0
+Instalar las dependencias correspondientes y borrar cache y la carpetas correspondientes a flutter_web_auth en caso de error relacionado
+a esa dependencias
+Surgen errores a la hora de correrlo en dispositivo fisico respecto a graddle aunque en versiones anteriores se probo y funciono correctamente
+
+Android SDK version 35.0.1
+Android Studio (version 2024.3.2)
+Flutter Channel stable, 3.29.3
+Si falla el OCR, prueba una imagen más nítida
